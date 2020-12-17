@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var middleware = require('./middlewares/middleware');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var messageRouter = require('./routes/messages');
 
 var app = express();
 
@@ -19,13 +21,18 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(middleware);
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/messages', messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+// Default running port = 3000
 
 // error handler
 app.use(function(err, req, res, next) {
