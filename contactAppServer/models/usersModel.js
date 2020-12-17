@@ -11,7 +11,7 @@ const schema = {
     }
 };
 const collectionName = "user"; 
-const userSchema = mongoose.Schema(schema);
+const userSchema = mongoose.Schema(schema, { timestamps: true });
 const User = mongoose.model(collectionName, userSchema);
 
 module.exports = User;

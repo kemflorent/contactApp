@@ -4,36 +4,28 @@ var router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res) {
-  User.find()
-  .then(function(users) {
-    res.json(users);
-  })
-  .catch(function(err) {
-    res.json(err);
-  })
+  User.find((err, users) => {
+    if(err) return res.status(500).json(err);
+    return res.status(200).json(users);
+  });
 });
 
 /* GET one user by id. */
 router.get('/:userId', function(req, res) {
   var userId = req.params.userId;
-  User.findById(userId).then(function(user){
-    res.json(user);
-  }).catch(function(err){
-    res.json(err);
+  User.findById(userId, (err, user) => {
+    if(err) return res.status(500).json(err);
+    return res.status(200).json(user);
   });
+
 });
 
 /* POST user. */
 router.post('/', function(req, res) {
-  console.log("in post request");
-  User.save(req.body)
-    .then(function(user) {
-      // If we were able to successfully create a User, send it back to the client
-      res.json(user);
-    })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
-      res.json(err);
+  var user = new User(req.body);
+  user.save(err => {
+    if(err) return  res.status(500).json(err);
+    return res.status(200).json(user);
   });
 
 });
@@ -42,10 +34,9 @@ router.post('/', function(req, res) {
 router.put('/:userId', function(req, res) {
   var user = req.body;
   var userId = req.params.userId;
-  User.findByIdAndUpdate(userId, user, {new: true}).then(function(user){
-    res.json(user);
-  }).catch(function(err){
-    res.json(err);
+  User.findByIdAndUpdate(userId, user, {new: true}, (err, user) => {
+    if(err) return res.status(500).json(err);
+    return res.status(200).json(user);
   });
   
 });
@@ -53,15 +44,15 @@ router.put('/:userId', function(req, res) {
 /* DELETE user. */
 router.delete('/:userId', function(req, res) {
   var userId = req.params.userId;
-  User.findByIdAndRemove(userId).then(function(user){
-     const message = {
-       message: 'user successfully deleted!',
-       id: user._id
-     };
-     res.json(message);
-  }).catch(function(err){
-     res.json(err);
+  User.findByIdAndRemove(userId, (err, user) => {
+    if(err) return res.status(500).json(err);
+    const response = {
+      message: 'user successfully deleted!',
+      id: user._id
+    };
+    return res.status(200).json(response);
   });
+
 });
 
 module.exports = router;

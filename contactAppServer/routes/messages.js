@@ -6,46 +6,55 @@ var router = express.Router();
  * Get all messages
  */
 router.get('/', function(req, res){
-   Message.find()
-                  .then((message) => res.json(message))
-                  .catch((err) => res.json(err));
+   Message.find((err, message) => {
+       if(err) return res.status(500).json(err);
+       return res.status(200).json(message);
+   });
 })
 
 /**
  * create a new message
  */
 router.post('/', function(req, res){
-    Message.save(req.body).then((message) => res.json(message))
-                          .catch((err) => res.json(err));
+    var message = new Message(req.body);
+    message.save(err => {
+        if(err) return res.status(500).json(err);
+        return res.status(200).json(message);
+    });
 })
 
 /**
  * Update existing message
  */
 router.put('/:messageId', function(req, res){
-    Message.findByIdAndUpdate(req.params.messageId, req.body, {new: true}).then((message) => res.json(message))
-    .catch((err) => res.json(err));
+    Message.findByIdAndUpdate(req.params.messageId, req.body, {new: true}, (err, message) => {
+        if(err) return res.status(500).json(err);
+        return res.status(200).json(message);
+    });
 })
 
 /**
  * Get One message by Id
  */
 router.get('/:messageId', function(req, res){
-    Message.findById(req.params.messageId).then((message) => res.json(message))
-    .catch((err) => res.json(err));
+    Message.findById(req.params.messageId, (err, message) => {
+        if(err) return res.status(500).json(err);
+        return res.status(200).json(message); 
+    });
 })
 
 /**
  * Delete existing message
  */
 router.delete('/:messageId', function(req, res){
-    Message.findByIdAndRemove(req.params.messageId)
-                    .then(function(message){ 
-                        const response = { 
-                            message: 'message successfully deleted!',
-                            id: message._id
-                         };
-                    }).catch((err) => res.json(err));
+    Message.findByIdAndRemove(req.params.messageId, (err, message) => {
+        if(err) return res.status(500).json(err);
+        const response = { 
+            message: 'message successfully deleted!',
+            id: message._id
+        };
+        return res.status(200).json(response); 
+    });
 })
 
 // Find message by criteria
